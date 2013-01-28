@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+#
+# Summary: Delete rbenv plugin(s).
+#
+# Usage: rbenv plugin delete <plugin>
+#
+# Deletes one or more installed rbenv plugins from $RBENV_ROOT/plugins/<plugin>.
+# Example:
+#
+# $ rbenv plugin delete rbenv-path rbenv-plugin
+#
+
+# Delete no plugins if no argument is passed
+if [ $# -eq 0 ] ; then
+  echo "That is not a valid argument to pass to rbenv plugin delete."
+  rbenv help plugin-delete
+  exit 1
+fi
+
+cd $RBENV_ROOT/plugins/rbenv-plugin/bin
+. rbenv-path-env
+. rbenv-path-shared
+cd - >/dev/null
+
+indent_output() {
+  while read data; do
+    echo -e " \033[1;32m|\033[0m  $data"
+  done
+}
+
+plugin_delete() {
+  echo -e "\033[1;32mdeleting $1\033[0m"
+  rm -rf $RBENV_PLUGIN_ROOT  2>&1 | indent_output
+}
+
+delete_plugins(){
+    for plugin in ${PLUGINS[@]}; do
+      RBENV_PLUGIN_ROOT="${RBENV_ROOT}/plugins/$plugin"
+      if [ -d $RBENV_PLUGIN_ROOT/.git ]; then
+        cd $RBENV_PLUGIN_ROOT
+        plugin_delete `basename $RBENV_PLUGIN_ROOT`
+        cd - >/dev/null
+      fi
+    done
+}
+
+cd $RBENV_ROOT/plugins
+
+if [ "x$1" = "xall" ]; then
+    PLUGINS=( $(find . -maxdepth 1 -type d -printf '%P\n') )
+else
+    PLUGINS=("$@")
+fi
+
+delete_plugins

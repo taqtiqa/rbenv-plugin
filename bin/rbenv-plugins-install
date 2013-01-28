@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#
+# Summary: Install multiple rbenv plugins.
+#
+# Usage: rbenv plugins install <gh_user:gh_repo> [gh_user_b:gh_repo_b ...]
+#
+# Installs multiple rbenv plugins from GitHub.
+# Uses the Github user's repository branch $RBENV_PLUGIN_BRANCH
+# (default: master).
+# The GitHub repository name is used as the rbenv plugin name.
+#
+# Example:
+#
+# $ export RBENV_PLUGIN_BRANCH=develop
+# $ rbenv plugins install taqtiqa:rbenv-path taqtiqa:rbenv-plugin
+#
+
+# Show usage text when wrong number of arguments are passed
+if [ $# -eq 0 ] || [ $# -gt 2 ] || [ "x$1" = "xall" ]; then
+  echo 'That is not a valid argument to pass to: rbenv plugins install'
+  rbenv help plugins-install >&2
+  exit 1
+fi
+
+cd $RBENV_ROOT/plugins/rbenv-plugin/bin
+. rbenv-path-env
+. rbenv-path-shared
+cd - >/dev/null
+
+# Install plugins:
+
+PLUGINS=("$@")
+for plugin in ${PLUGINS[@]}; do
+
+  AUTHOR=${plugin%%:*}
+  PLUGIN=${plugin#*:}
+  rbenv-plugin-install $AUTHOR $PLUGIN $RBENV_PLUGIN_BRANCH
+
+done
