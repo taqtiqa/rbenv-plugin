@@ -1,0 +1,31 @@
+set -e
+
+if [ -n "$RBENV_DEBUG" ]; then
+ export PS4='+ [${BASH_SOURCE##*/}:${LINENO}] '
+ set -x
+fi
+
+if [ -z "${RBENV_ROOT}" ]; then
+  RBENV_ROOT="$HOME/.rbenv"
+fi
+
+export RBENV_PLUGIN_ROOT="${RBENV_ROOT}/plugins/rbenv-$RBENV_PLUGIN_NAME"
+
+# If the user hasn't specified which rbenv-<plugin> branch
+# to install, we default to the master branch
+if [ "x$RBENV_PLUGIN_BRANCH" = "x" ]; then
+  export RBENV_PLUGIN_BRANCH=master
+fi
+
+if [ "$1" = "version" ] || [ "$1" = "--version" ] ; then
+  echo "rbenv-$RBENV_PLUGIN_NAME ${RBENV_PLUGIN_VERSION}"
+  echo "by $RBENV_PLUGIN_BY"
+  echo $RBENV_PLUGIN_SOURCE
+  exit
+fi
+
+# Guard for the case this plugin is invoked directly (i.e. outside of rbenv).
+# Example an rbenv installer script
+if [ -d "${RBENV_ROOT}/plugins/rbenv-path" ]; then
+  ${RBENV_ROOT}/plugins/rbenv-path/bin/rbenv-path-append ${RBENV_PLUGIN_ROOT}/bin ${RBENV_ROOT}/bin
+fi

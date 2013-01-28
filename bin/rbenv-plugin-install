@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+#
+# Summary: Install single rbenv plugin.
+#
+# Usage: rbenv plugin install <gh_user:gh_repo> [branch]
+#
+# Installs a single rbenv plugin from GitHub.
+# Uses the Github user's repository branch passed in (default: master).
+# The GitHub repository name is used as the rbenv plugin name.
+#
+# Example:
+#
+# $ rbenv plugin install taqtiqa:rbenv-path develop
+# $ rbenv plugin install taqtiqa:rbenv-plugin feature/plugin
+#
+
+
+# Show usage text when wrong number of arguments are passed
+if [ $# -eq 0 ] || [ $# -gt 2 ] || [ "x$1" = "xall" ]; then
+  echo 'That is not a valid argument to pass to: rbenv plugin install'
+  rbenv help plugin-install >&2
+  exit 1
+fi
+
+cd $RBENV_ROOT/plugins/rbenv-plugin/bin
+. rbenv-path-env
+. rbenv-path-shared
+cd - >/dev/null
+
+indent_output() {
+  while read data; do
+    echo -e " \033[1;32m|\033[0m  $data"
+  done
+}
+
+# rbenv explicitly targets production uses cases:
+# Ensure we download and unpack a minimal number of Git objects
+git_init() {
+  local author=$1
+  local name=$2
+  local branch=$3
+  echo "Installing rbenv plugin $name by $author (branch: $branch)"
+    git init 2>&1 | indent_output
+    git config user.email "${author}@example.com"
+    git config user.name "${author}/rbenv-${name} (${branch}) script"
+    git remote add --no-tags origin https://github.com/$author/$name.git 2>&1 | indent_output
+    git remote set-url --push origin disabled 2>&1 | indent_output
+    git fetch --no-tags --depth=1 origin +$branch:refs/remotes/origin/$branch 2>&1 | indent_output
+    git checkout $branch 2>&1 | indent_output
+}
+
+cd $RBENV_ROOT
+
+# Install plugin:
+
+
+PLUGIN=$1
+if [ ! -n "$2" ]; then
+  [ -z "${RBENV_PLUGIN_BRANCH}" ] && RBENV_PLUGIN_BRANCH=master
+  BRANCH=$RBENV_PLUGIN_BRANCH
+else
+  BRANCH=$2
+fi
+
+AUTHOR=${PLUGIN%%:*}
+PLUGIN=${PLUGIN#*:}
+RBENV_PLUGIN_ROOT="${RBENV_ROOT}/plugins/$PLUGIN"
+
+if [ ! -d "$RBENV_PLUGIN_ROOT" ] ; then
+  mkdir -p $RBENV_PLUGIN_ROOT  2>&1 | indent_output
+  cd $RBENV_PLUGIN_ROOT
+  git_init $AUTHOR $PLUGIN $BRANCH
+  cd - >/dev/null
+fi

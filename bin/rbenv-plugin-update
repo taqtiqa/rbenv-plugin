@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+#
+# Summary: Update rbenv plugin(s).
+#
+# Usage: rbenv plugin update <all>|<plugin> [plugin ...]
+#
+# The branch cannot be changed with this command.
+# To change a branch, delete and install the plugin from the
+# desired branch.
+# Updates a single rbenv plugin from GitHub when given a plugin name.
+# Updates several rbenv plugins from GitHub when given space separated
+# list of plugin names.
+# Updates all installed plugins when passed the keyword all
+#
+# Example:
+#
+# $ rbenv plugin update all
+# $ rbenv plugin update rbenv-path
+# $ rbenv plugin update rbenv-path rbenv-plugin
+#
+
+# Show usage text when wrong number of arguments are passed
+if [ $# -eq 0 ]; then
+  echo 'That is not a valid argument to pass to: rbenv plugin update'
+  rbenv help plugin-update >&2
+  exit 1
+fi
+
+cd $RBENV_ROOT/plugins/rbenv-plugin/bin
+. rbenv-path-env
+. rbenv-path-shared
+cd - >/dev/null
+
+indent_output() {
+  while read data; do
+    echo -e " \033[1;32m|\033[0m  $data"
+  done
+}
+
+plugin_update() {
+  echo -e "\033[1;32mupdating $1\033[0m"
+  git pull --no-tags --depth=1 origin 2>&1 | indent_output
+  echo
+}
+
+update_plugins(){
+    for plugin in ${PLUGINS[@]}; do
+      RBENV_PLUGIN_ROOT="${RBENV_ROOT}/plugins/$plugin"
+      if [ -d $RBENV_PLUGIN_ROOT/.git ]; then
+        cd $RBENV_PLUGIN_ROOT
+        plugin_update `basename $RBENV_PLUGIN_ROOT`
+        cd - >/dev/null
+      fi
+    done
+}
+
+cd $RBENV_ROOT/plugins
+
+# Update all plugins if no argument is passed
+if [ $# -eq 0 ] || [ "x$1" = "xall" ]; then
+    PLUGINS=( $(find . -maxdepth 1 -type d -printf '%P\n') )
+else
+    PLUGINS=("$@")
+fi
+
+update_plugins
