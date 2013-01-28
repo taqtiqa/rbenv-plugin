@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+#
+# Summary: Utilities for rbenv users to manage multiple rbenv plugins.
+#
+# Usage: rbenv plugins
+#
+# Utilities for rbenv users to manage multiple rbenv plugins.
+
+export RBENV_PLUGIN_NAME=plugin
+export RBENV_PLUGIN_VERSION="0.0.1"
+export RBENV_PLUGIN_BY="Mark Van de Vyver <mark@taqtiqa.com>"
+export RBENV_PLUGIN_SOURCE="https://github.com/taqtiqa-mark/rbenv-$RBENV_PLUGIN_NAME"
+
+cd $RBENV_ROOT/plugins/rbenv-plugin/bin
+. rbenv-path-env
+. rbenv-path-shared
+cd - >/dev/null
+
+# Provide rbenv completions
+if [ "$1" = "--complete" ]; then
+  echo "delete"
+  echo "install"
+  echo "list"
+  echo "update"
+  echo "version"
+  exit
+fi
+
+command="$1"
+command_path="$(command -v "rbenv-plugins-$command" || true)"
+
+if [ -z "$command_path" ]; then
+  { echo "version ${RBENV_PLUGIN_VERSION}"
+    echo "${0##*/} [command] [options]"
+    echo
+    echo "possible commands are:"
+    echo "  delete <all> | <plugin> [plugin ...]"
+    echo "  install <source:plugin> [source:plugin ...]"
+    echo "  list"
+    echo "  update <all> | <plugin> [plugin ...]"
+    echo "  version"
+    echo
+    echo "For full documentation, see: https://github.com/taqtiqa-mark/rbenv-plugin"
+  } >&2
+  exit 1
+fi
+
+shift
+exec "$command_path" "$@"
