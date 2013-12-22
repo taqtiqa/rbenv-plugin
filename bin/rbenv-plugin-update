@@ -58,7 +58,7 @@ cd $RBENV_ROOT/plugins
 
 # Update all plugins if no argument is passed
 if [ $# -eq 0 ] || [ "x$1" = "xall" ]; then
-    PLUGINS=( $(find . -maxdepth 1 -type d -printf '%P\n') )
+    PLUGINS=( $(find . -maxdepth 1 -type d -name [^\.]\* | sed 's:^\./::') )
 else
     PLUGINS=("$@")
 fi
