@@ -19,13 +19,6 @@
 # $ rbenv plugin update rbenv-path rbenv-plugin
 #
 
-# Show usage text when wrong number of arguments are passed
-if [ $# -eq 0 ]; then
-  echo 'That is not a valid argument to pass to: rbenv plugin update'
-  rbenv help plugin-update >&2
-  exit 1
-fi
-
 cd $RBENV_ROOT/plugins/rbenv-plugin/bin
 . rbenv-path-env
 . rbenv-path-shared
@@ -66,7 +59,7 @@ if [ "$1" = "--complete" ]; then
   exit
 fi
 
-if [ $# -ne 0 ] || [ "x$1" != "xall" ]; then
+if [ $# -ne 0 ] && [ "x$1" != "xall" ]; then
     PLUGINS=("$@")
 fi
 
