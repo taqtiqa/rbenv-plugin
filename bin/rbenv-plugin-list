@@ -42,5 +42,5 @@ list_plugins(){
 
 cd $RBENV_ROOT/plugins
 # List all plugins irrespective of argument passed in
-PLUGINS=( $(find . -maxdepth 1 -type d -printf '%P\n') )
+PLUGINS=( $(find . -maxdepth 1 -type d -name [^\.]\* | sed 's:^\./::') )
 list_plugins
