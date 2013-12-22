@@ -62,6 +62,13 @@ else
   BRANCH=$2
 fi
 
+grep $PLUGIN $RBENV_ROOT/plugins/rbenv-plugin/approved_plugins > /dev/null 2>&1
+approved_plugin=$?
+if [ "$approved_plugin" == "0" ];then
+  PLUGIN=`grep $PLUGIN $RBENV_ROOT/plugins/rbenv-plugin/approved_plugins`
+fi
+
+
 AUTHOR=${PLUGIN%%:*}
 PLUGIN=${PLUGIN#*:}
 RBENV_PLUGIN_ROOT="${RBENV_ROOT}/plugins/$PLUGIN"

@@ -1,0 +1,12 @@
+sstephenson:ruby-build
+tpope:rbenv-ctags
+sstephenson:rbenv-vars
+sstephenson:rbenv-gem-rehash
+sstephenson:rbenv-default-gems
+tpope:rbenv-communal-gems
+chriseppstein:rbenv-each
+jf:rbenv-gemset
+rkh:rbenv-update
+rkh:rbenv-use
+rkh:rbenv-whatis
+tpope:rbenv-aliases
