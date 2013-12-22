@@ -47,7 +47,7 @@ delete_plugins(){
 cd $RBENV_ROOT/plugins
 
 if [ "x$1" = "xall" ]; then
-    PLUGINS=( $(find . -maxdepth 1 -type d -printf '%P\n') )
+    PLUGINS=( $(find . -maxdepth 1 -type d -name [^\.]\* | sed 's:^\./::') )
 else
     PLUGINS=("$@")
 fi
