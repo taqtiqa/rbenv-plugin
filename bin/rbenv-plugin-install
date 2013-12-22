@@ -22,6 +22,12 @@ if [ $# -eq 0 ] || [ $# -gt 2 ] || [ "x$1" = "xall" ]; then
   exit 1
 fi
 
+# Provide rbenv completions
+if [ "$1" = "--complete" ]; then
+  awk -F : '{gsub(/rbenv-/, "", $2);print $2}' $RBENV_ROOT/plugins/rbenv-plugin/approved_plugins
+  exit
+fi
+
 cd $RBENV_ROOT/plugins/rbenv-plugin/bin
 . rbenv-path-env
 . rbenv-path-shared
