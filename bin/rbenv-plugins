@@ -7,7 +7,7 @@
 # Utilities for rbenv users to manage multiple rbenv plugins.
 
 export RBENV_PLUGIN_NAME=plugin
-export RBENV_PLUGIN_VERSION="0.0.1"
+export RBENV_PLUGIN_VERSION="0.0.2"
 export RBENV_PLUGIN_BY="Mark Van de Vyver <mark@taqtiqa.com>"
 export RBENV_PLUGIN_SOURCE="https://github.com/taqtiqa-mark/rbenv-$RBENV_PLUGIN_NAME"
 

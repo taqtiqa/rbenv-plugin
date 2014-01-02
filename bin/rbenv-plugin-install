@@ -22,6 +22,12 @@ if [ $# -eq 0 ] || [ $# -gt 2 ] || [ "x$1" = "xall" ]; then
   exit 1
 fi
 
+# Provide rbenv completions
+if [ "$1" = "--complete" ]; then
+  awk -F : '{gsub(/rbenv-/, "", $2);print $2}' $RBENV_ROOT/plugins/rbenv-plugin/approved_plugins
+  exit
+fi
+
 cd $RBENV_ROOT/plugins/rbenv-plugin/bin
 . rbenv-path-env
 . rbenv-path-shared
@@ -61,6 +67,13 @@ if [ ! -n "$2" ]; then
 else
   BRANCH=$2
 fi
+
+grep $PLUGIN $RBENV_ROOT/plugins/rbenv-plugin/approved_plugins > /dev/null 2>&1
+approved_plugin=$?
+if [ "$approved_plugin" == "0" ];then
+  PLUGIN=`grep $PLUGIN $RBENV_ROOT/plugins/rbenv-plugin/approved_plugins`
+fi
+
 
 AUTHOR=${PLUGIN%%:*}
 PLUGIN=${PLUGIN#*:}
